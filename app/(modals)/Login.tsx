@@ -3,8 +3,12 @@ import React from 'react'
 import styles  from '@/constants/styles'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const login = () => {
+  const HandleLogin = () => {
+    
+  }
   return (
     <View style={styles.container}>
       <View style={{
@@ -35,7 +39,7 @@ const login = () => {
         placeholder="Password"
         style={[styles.inputField, { marginBottom: 30 }]}
       />
-      <TouchableOpacity style={styles.btn}>
+      <TouchableOpacity onPress={HandleLogin} style={styles.btn}>
         <Text style={styles.btnText}>Login</Text>
       </TouchableOpacity>
       <View style={styles.separatorView}>

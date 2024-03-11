@@ -13,10 +13,12 @@ import { Redirect } from "expo-router";
 
 const Home = () => {
   const [alarm, setAlarm] = useState(false);
+
   const [user, setUser] = useState<string>(""); // Explicitly specify the type of 'user' as string
   useEffect(() => {
     const getData = async () => {
       try {
+        
         const Username = await AsyncStorage.getItem("username");
         if (Username !== null) {
           setUser(Username);
@@ -33,9 +35,9 @@ const Home = () => {
         setAlarm(!alarm);
   }
   
-  if (!user) {
-        return <Redirect href="/(modals)/Login" />;
-  }
+  // if (!user) {
+  //       return <Redirect href="/(modals)/Login" />;
+  // // }
   
         return (
       <View
