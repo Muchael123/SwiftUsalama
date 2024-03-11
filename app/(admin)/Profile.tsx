@@ -151,7 +151,9 @@ const Profile = () => {
 
             <Text style={{}}>margaretnjoki12@gmail.com</Text>
           </View>
-          <Link href="/(modals)/ChangeProfile" asChild
+          <Link
+            href="/(modals)/ChangeProfile"
+            asChild
             style={{
               backgroundColor: Colors.blue400,
               padding: 10,
@@ -173,7 +175,30 @@ const Profile = () => {
               </Text>
             </Pressable>
           </Link>
-          
+          <Link
+            href="/"
+            asChild
+            style={{
+              backgroundColor: Colors.blue400,
+              padding: 10,
+              borderRadius: 10,
+              height: 50,
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 20,
+            }}
+          >
+            <Pressable>
+              <Text
+                style={{
+                  color: Colors.white,
+                  fontWeight: "bold",
+                }}
+              >
+                Log out
+              </Text>
+            </Pressable>
+          </Link>
         </View>
       </View>
     </View>

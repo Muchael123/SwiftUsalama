@@ -48,7 +48,9 @@ function RootLayoutNav() {
   const router = useRouter()
   return (
     <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(users)" options={{ headerShown: false }} />
+      <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+      <Stack.Screen name="index" options={{ headerShown: false, presentation: 'modal' }} />
       <Stack.Screen
         name="(modals)/Login"
         options={{
@@ -62,7 +64,7 @@ function RootLayoutNav() {
         options={{
           presentation: "modal",
           title: "Create Complaint",
-          
+
           headerTitleStyle: {
             fontFamily: "SpaceMono",
           },
