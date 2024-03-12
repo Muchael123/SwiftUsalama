@@ -35,9 +35,9 @@ const Home = () => {
         setAlarm(!alarm);
   }
   
-  // if (!user) {
-  //       return <Redirect href="/(modals)/Login" />;
-  // // }
+  if (!user) {
+        return <Redirect href="/(modals)/Login" />;
+   }
   
         return (
       <View

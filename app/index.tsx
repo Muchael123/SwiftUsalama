@@ -1,9 +1,30 @@
 import { View, Text, Pressable } from "react-native";
-import React from "react";
-import { Link } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Link, Redirect } from "expo-router";
 import Colors from "@/constants/Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const index = () => {
+   const [user, setUser] = useState<string>(""); // Explicitly specify the type of 'user' as string
+   useEffect(() => {
+     const getData = async () => {
+       try {
+         const Username = await AsyncStorage.getItem("username");
+         if (Username !== null) {
+           setUser(Username);
+         }
+       } catch (e) {
+         // error reading value
+         console.log(e);
+       }
+     };
+     getData();
+   }, [user]);
+
+  if (!user) {
+    return <Redirect href="/(modals)/Login" />;
+  }
+  
   return (
     <View
       style={{

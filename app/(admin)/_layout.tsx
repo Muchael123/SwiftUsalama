@@ -32,6 +32,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Alarms"
         options={{
+          headerShown: true,
           headerTitleAlign: "center",
           title: "Alarms",
           tabBarIcon: ({ color }) => (
