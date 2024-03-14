@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore} from 'firebase/firestore';
+import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
@@ -17,4 +17,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { db,auth,app };
+export { db, app, auth };
+
+//android 519757743420-vlgf7c90q0m77gf76os9dnan6g7cb4qn.apps.googleusercontent.com

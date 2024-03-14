@@ -1,4 +1,4 @@
-rootProject.name = '2meiget'
+rootProject.name = 'SwiftUsalama'
 
 dependencyResolutionManagement {
   versionCatalogs {
