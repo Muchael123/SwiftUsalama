@@ -9,12 +9,18 @@ import {
   Dimensions,
   ActivityIndicator,
   Alert,
+  Pressable,
 } from "react-native";
 import { auth } from "@/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "@/constants/styles";
 import Colors from "@/constants/Colors";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
+import { router } from "expo-router";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -25,14 +31,6 @@ const Login = () => {
     try {
       setLoading(true);
       console.log(email, password);
-
-      // Validate email format
-      const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
-      if (!emailRegex.test(email)) {
-        Alert.alert("Error", "Invalid email format.");
-        return;
-      }
-
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -90,6 +88,9 @@ const Login = () => {
       <TouchableOpacity onPress={handleLogin} style={styles.btn}>
         <Text style={styles.btnText}>Login</Text>
       </TouchableOpacity>
+      <Pressable onPress={() => router.push('/(modals)/Signup')}>
+        <Text>Don't have an account? Signup</Text>
+      </Pressable>
     </View>
   );
 };

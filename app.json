@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "2meiget",
-    "slug": "2meiget",
+    "name": "SwiftUsalama",
+    "slug": "SwiftUsalama",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -51,6 +51,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "7b7fb899-e732-4095-928a-f2627f5be61f"
+      }
     }
   }
 }

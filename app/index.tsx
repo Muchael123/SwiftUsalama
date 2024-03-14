@@ -5,22 +5,19 @@ import Colors from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const index = () => {
-   const [user, setUser] = useState<string>(""); // Explicitly specify the type of 'user' as string
-   useEffect(() => {
-     const getData = async () => {
-       try {
-         const Username = await AsyncStorage.getItem("username");
-         if (Username !== null) {
-           setUser(Username);
+     const [user, setUser] = useState<string | null>(""); // Explicitly specify the type of 'user' as string
+     useEffect(() => {
+       const getData = async () => {
+         try {
+           const Username = await AsyncStorage.getItem("user");
+           setUser(Username)
+         } catch (e) {
+           console.log(e);
          }
-       } catch (e) {
-         // error reading value
-         console.log(e);
-       }
-     };
-     getData();
-   }, [user]);
-
+       };
+       getData();
+     }, [user]);
+  console.log('user from index below useeffect', user)
   if (!user) {
     return <Redirect href="/(modals)/Login" />;
   }
