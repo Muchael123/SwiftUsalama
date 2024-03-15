@@ -3,8 +3,10 @@ import MapView, { Callout, Marker, AnimatedRegion } from "react-native-maps";
 import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Home = () => {
+  const  [user,setuser]= useState<string>('')
   const kakamegaBoundaries = {
     minLatitude: 0.0,
     maxLatitude: 0.5,
@@ -15,8 +17,10 @@ const Home = () => {
     { latitude: number; longitude: number }[]
   >([]);
 
-  useEffect(() => {
+  useEffect( () => {
+    setUsername()
     const newCordinates = [];
+    console.log('user in', user)
     for (let i = 0; i < 5; i++) {
       const latitude =
         Math.random() *
@@ -31,7 +35,12 @@ const Home = () => {
     }
     setCordinates(newCordinates);
   }, []);
-
+async function setUsername(){
+   const username = await AsyncStorage.getItem('user')
+    if(username !== null)
+    setuser(username)
+   
+}
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.TopView}>

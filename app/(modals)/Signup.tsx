@@ -11,7 +11,8 @@ import {
   Alert,
   Pressable,
 } from "react-native";
-import { auth } from "@/firebaseConfig";
+import { auth,db } from "@/firebaseConfig";
+import {addDoc, collection,serverTimestamp} from "firebase/firestore"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "@/constants/styles";
 import Colors from "@/constants/Colors";
@@ -42,7 +43,14 @@ const Signup = () => {
         );
         const user = userCredential.user;
         await AsyncStorage.setItem("user", user.uid);
-        router.push("/"); // Convert user object to string
+          await addDoc(collection(db,"users",user.email,"userdetails"),{
+        Email:user.email,
+        isAdmin:false,
+        phoneNumber:user.phoneNumber,
+        userImage:user.photoURL,
+        userName:null
+      })
+        router.push("/(admin)/"); // Convert user object to string
         console.log("User logged in:", user.uid);
       } else
         Alert.alert(
@@ -64,7 +72,8 @@ const Signup = () => {
       // const userCredential = (auth, email, password);
       const user = userCredential.user;
       await AsyncStorage.setItem("user", user.uid);
-      router.push("/"); // Convert user object to string
+      router.push("/");
+      setLoading(false); // Convert user object to string
       console.log("User logged in:", user.uid);
     } catch (error) {
       console.error("Error logging in:", error);
@@ -75,9 +84,12 @@ const Signup = () => {
   };
 
   return (
+    <>
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-      {loading && <ActivityIndicator size="large" color={Colors.white} />}
+      
+      {loading?<ActivityIndicator size="large"  />:
+     (<>
       <View
         style={{
           justifyContent: "center",
@@ -93,8 +105,9 @@ const Signup = () => {
             
           }}
         >
-          Welcome To Swift-Usalama! Enter your deatils to Login
+          Welcome To Swift-Usalama! Enter your details to Sign Up
         </Text>
+        
       </View>
       <TextInput
         autoCapitalize="none"
@@ -121,7 +134,7 @@ const Signup = () => {
         style={[styles.inputField, { marginBottom: 30 }]}
       />
       <TouchableOpacity onPress={handleLogin} style={styles.btn}>
-        <Text style={styles.btnText}>Login</Text>
+        <Text style={styles.btnText}>Sign Up</Text>
       </TouchableOpacity>
       <Pressable onPress={() => router.push("/(modals)/Login")}>
         <Text>Already have an account? Sign In</Text>
@@ -149,7 +162,12 @@ const Signup = () => {
           <Text style={styles.btnOutlineText}>Sign Up with Google</Text>
         </TouchableOpacity>
       </View>
+     </>)
+      }
     </View>
+   
+    </>
+
   );
 };
 

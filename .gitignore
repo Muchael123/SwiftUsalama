@@ -38,4 +38,4 @@ yarn-error.*
 
 expo-env.d.ts
 android
-+ ios
+ios
