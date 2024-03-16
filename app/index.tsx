@@ -1,65 +1,27 @@
 import { View, Text, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Link, Redirect } from "expo-router";
+import { Link, Redirect, router } from "expo-router";
 import Colors from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Main from "./components/main";
 
 const index = () => {
-     const [user, setUser] = useState<string | null>(""); // Explicitly specify the type of 'user' as string
-     useEffect(() => {
-       const getData = async () => {
-         try {
-           const Username = await AsyncStorage.getItem("user");
-           setUser(Username)
-         } catch (e) {
-           console.log(e);
-         }
-       };
-       getData();
-     }, [user]);
-  console.log('user from index below useeffect', user)
-  if (!user) {
-    return <Redirect href="/(modals)/Login" />;
+  const [userId, setUserId] = useState<string | null>('')
+  useEffect(()=>{
+    setUser()
+    
+  }, [userId])
+  if(userId === null){
+    console.log('no user')
+    router.push('/Login')
+   }
+  const setUser= async ()=>{
+    const id = await AsyncStorage.getItem('user')
+    setUserId(id)
   }
-  
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 10,
-      }}
-    >
-      <Link href={"/(users)/"} asChild>
-        <Pressable
-          style={{
-            width: "100%",
-            backgroundColor: Colors.blue500,
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 10,
-          }}
-        >
-          <Text style={{ color: Colors.white }}>Login as user</Text>
-        </Pressable>
-      </Link>
-      <Link href={"/(admin)/"} asChild>
-        <Pressable
-          style={{
-            width: "100%",
-            backgroundColor: Colors.blue500,
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 10,
-            marginTop: 10,
-          }}
-        >
-          <Text style={{ color: Colors.white }}>Login as admin</Text>
-        </Pressable>
-      </Link>
-    </View>
-  );
+
+   
+   return(<Main/>)
 };
 
 export default index;

@@ -1,11 +1,34 @@
 import { View, Text, Platform, FlatList, Touchable, TouchableOpacity, Dimensions, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
-import Dumy from "@/constants/Dumy";
 import { Entypo } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
 import { Link } from "expo-router";
+import formatDate from "@/Hooks/DateTimeConverter";
 const Scan = () => {
+  const [complaints, setComplaints] = useState<AlarmUser[]>([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    getComplaints();
+  }, []);
+  const getComplaints = async () => {
+    setLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "Complaints"));
+      const complaintData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log(complaintData);
+      setComplaints(complaintData);
+    } catch (error) {
+      console.error("Error fetching complaints:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <LinearGradient
       colors={[Colors.blue400, Colors.blue400, Colors.white]}
@@ -28,7 +51,7 @@ const Scan = () => {
       </View>
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={Dumy}
+        data={complaints}
         renderItem={({ item }) => {
           return (
             <View
@@ -46,21 +69,21 @@ const Scan = () => {
                   color: Colors.blue400,
                 }}
               >
-                {item.username}
+                {item.title}
               </Text>
               <Text
                 style={{
                   color: Colors.blue400,
                 }}
               >
-                {item.complaint}
+                {item.description}
               </Text>
               <Text
                 style={{
                   color: Colors.blue400,
                 }}
               >
-                {item.Date}
+                {formatDate(item.date)}
               </Text>
             </View>
           );

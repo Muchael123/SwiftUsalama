@@ -1,15 +1,43 @@
 import { View, Text, Dimensions, Image, StyleSheet, TouchableOpacity, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
 import { Fontisto, Feather } from "@expo/vector-icons";
-import { Link } from "expo-router/build/exports";
+import { Link, Redirect } from "expo-router/build/exports";
+import {signOut} from '@firebase/auth'
+import { auth } from "@/firebaseConfig";
+import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
+   const [user, setUser] = useState<string | null>("");
+
+   useEffect(()=>{
+    setUsername()
+    
+    }, [])
+    const setUsername = async()=>{  
+      const userid = await AsyncStorage.getItem('user')
+      setUser(userid)
+    }
+    if (user === null ) {
+        return <Redirect href="/(modals)/Login" />;
+   }
+  
+
   const sliceEmail = (email: string) => {
     const username = email.slice(0, 10);
     const provider = email.slice(email.indexOf("@") + 1);
     return `${username}...@${provider}`;
   };
+  const logOut = async ()=>{
+    signOut(auth)
+    AsyncStorage.removeItem('user')
+    console.log(AsyncStorage.getItem('user'))
+    console.log('signed out')
+    router.push('/')
+
+  }
+  console.log('from user profile',user)
   return (
     <View
       style={{
@@ -175,9 +203,8 @@ const Profile = () => {
               </Text>
             </Pressable>
           </Link>
-          <Link
-            href="/"
-            asChild
+            <Pressable
+            onPress={logOut}
             style={{
               backgroundColor: Colors.blue400,
               padding: 10,
@@ -186,9 +213,7 @@ const Profile = () => {
               justifyContent: "center",
               alignItems: "center",
               marginTop: 20,
-            }}
-          >
-            <Pressable>
+            }}>
               <Text
                 style={{
                   color: Colors.white,
@@ -198,7 +223,6 @@ const Profile = () => {
                 Log out
               </Text>
             </Pressable>
-          </Link>
         </View>
       </View>
     </View>

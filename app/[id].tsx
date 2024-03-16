@@ -3,8 +3,10 @@ import MapView, { Callout, Marker, AnimatedRegion } from "react-native-maps";
 import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Stack, useLocalSearchParams } from "expo-router";
 
 const Home = () => {
+  const {id} = useLocalSearchParams()
   const kakamegaBoundaries = {
     minLatitude: 0.0,
     maxLatitude: 0.5,
@@ -31,9 +33,12 @@ const Home = () => {
     }
     setCordinates(newCordinates);
   }, []);
-
+if(id===null){
+  return <Text>Not found</Text>
+}
   return (
     <View style={{ flex: 1 }}>
+      <Stack.Screen options={{title: `${id}`}}/>
       <View style={styles.TopView}>
         <Text style={{ color: Colors.white, fontSize: 20 }}>Home</Text>
       </View>
