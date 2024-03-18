@@ -17,7 +17,7 @@ const Scan = () => {
     setLoading(true);
     try {
       const querySnapshot = await getDocs(collection(db, "Complaints"));
-      const complaintData = querySnapshot.docs.map((doc) => ({
+      const complaintData = querySnapshot.docs.map((doc: { id: any; data: () => any; }) => ({
         id: doc.id,
         ...doc.data(),
       }));
@@ -29,6 +29,7 @@ const Scan = () => {
       setLoading(false);
     }
   };
+  console.log(complaints)
   return (
     <LinearGradient
       colors={[Colors.blue400, Colors.blue400, Colors.white]}
