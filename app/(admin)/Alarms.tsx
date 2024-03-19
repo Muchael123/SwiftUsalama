@@ -6,12 +6,12 @@ import {
   Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
-import { collection, getDocs } from "firebase/firestore";
+import { onSnapshot, collection } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import Colors from "@/constants/Colors";
 import { Tabs } from "expo-router";
 import { Link } from "expo-router";
+
 type AlarmUser = {
   email: string;
   location: {
@@ -20,31 +20,38 @@ type AlarmUser = {
   };
   id: string;
 };
+
 const AlarmsScreen = () => {
   const [alarmUsers, setAlarmUsers] = useState<AlarmUser[]>([]);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    getAlarms();
+    const unsubscribe = getAlarms();
+
+    return () => unsubscribe(); // Cleanup function to unsubscribe from real-time updates
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const getAlarms = async () => {
+
+  const getAlarms = () => {
     setLoading(true);
-    try {
-      const querySnapshot = await getDocs(collection(db, "Alarms"));
-      console.log('from query',querySnapshot)
-      const alarmsData = querySnapshot.docs.map((doc) =>
-        ({
+
+    const query = collection(db, "Alarms");
+    const unsubscribe = onSnapshot(query, (snapshot) => {
+      const alarmsData: AlarmUser[] = [];
+      snapshot.forEach((doc) => {
+        alarmsData.push({
           id: doc.id,
           ...doc.data(),
-        })
-      );
+        });
+      });
       setAlarmUsers(alarmsData);
-      console.log('from alarmdata', alarmsData)
-    } catch (error) {
-      console.error("Error fetching alarms:", error);
-    } finally {
       setLoading(false);
-    }
+    });
+
+    return unsubscribe;
   };
+
   return (
     <View>
       <Tabs.Screen options={{}} />
@@ -73,18 +80,10 @@ const AlarmsScreen = () => {
                   >
                     {item.id}
                   </Text>
-                  <Text
-                    style={{
-                      color: Colors.white,
-                    }}
-                  >
+                  <Text style={{ color: Colors.white }}>
                     {item.location.latitude}
                   </Text>
-                  <Text
-                    style={{
-                      color: Colors.white,
-                    }}
-                  >
+                  <Text style={{ color: Colors.white }}>
                     {item.location.longitude}
                   </Text>
                 </Pressable>

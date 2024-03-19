@@ -29,5 +29,7 @@ export default {
   red600: '#DB2525',
   red700: '#B71919',
   red800: '#931010',
-  red900: '#7A0909', // Darkest shade of red
+  red900: '#7A0909',
+  black:'#000000'
+   // Darkest shade of red
 };

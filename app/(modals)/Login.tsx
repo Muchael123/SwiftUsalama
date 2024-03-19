@@ -27,6 +27,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [userDetails,setUserDetails] = useState("")
 
   const handleLogin = async () => {
     try {
@@ -39,7 +40,9 @@ const Login = () => {
       );
       const user = userCredential.user;
       console.log(user);
+      setUserDetails(user)
       AsyncStorage.setItem("user", user.uid);
+      AsyncStorage.setItem("userEmail", user.email);
 
       console.log("User logged in:", user);
       router.push("/");
