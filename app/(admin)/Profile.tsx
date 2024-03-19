@@ -1,14 +1,39 @@
-import { View, Text, Dimensions, Image, StyleSheet, TouchableOpacity, Pressable } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  Dimensions,
+  Image,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
-import { Fontisto, Feather } from "@expo/vector-icons";
-import { Link } from "expo-router/build/exports";
+import { Fontisto, Feather, MaterialIcons } from "@expo/vector-icons";
+import { Link, Redirect } from "expo-router/build/exports";
+import { signOut } from "@firebase/auth";
+import { auth } from "@/firebaseConfig";
+import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
-  const sliceEmail = (email: string) => {
-    const username = email.slice(0, 10);
-    const provider = email.slice(email.indexOf("@") + 1);
-    return `${username}...@${provider}`;
+  const [email, setEmail] = useState<string | null>();
+
+  useEffect(() => {
+    getUser();
+  }, []);
+  const getUser = async () => {
+    const myemail = await AsyncStorage.getItem("userEmail");
+    setEmail(myemail);
+    console.log("from email", myemail);
+  };
+  const logOut = async () => {
+    signOut(auth);
+    AsyncStorage.removeItem("user");
+    console.log(AsyncStorage.getItem("user"));
+    console.log("signed out");
+    router.push("/");
   };
   return (
     <View
@@ -36,16 +61,31 @@ const Profile = () => {
             borderWidth: 5,
           }}
         >
-          <Image
-            style={{
-              borderRadius: Dimensions.get("window").width / 3,
-              height: "100%",
-              width: "100%",
+          <View>
+            <Image
+              style={{
+                borderRadius: Dimensions.get("window").width / 3,
+                height: "100%",
+                width: "100%",
 
-              objectFit: "cover",
-            }}
-            source={require("@/assets/images/download12.jpg")}
-          />
+                objectFit: "cover",
+              }}
+              source={require("@/assets/images/download12.jpg")}
+            />
+            <TouchableOpacity onPress={()=> console.log('i was clicked')}>
+              <MaterialIcons
+                name="add-a-photo"
+                size={24}
+                color="white"
+                style={{
+                  position: "absolute",
+                  bottom: 10,
+                  right: 10,
+                  color: Colors.blue200,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
       <View
@@ -80,7 +120,7 @@ const Profile = () => {
         <View
           style={{
             padding: 40,
-            marginTop: Dimensions.get("window").height / 20,
+            marginTop: Dimensions.get("window").height / 70,
             gap: 16,
           }}
         >
@@ -98,7 +138,7 @@ const Profile = () => {
           <View
             style={{
               flexDirection: "column",
-              borderColor: Colors.grey400,
+              borderColor: Colors.grey200,
               borderWidth: StyleSheet.hairlineWidth,
               justifyContent: "space-between",
               borderRadius: 10,
@@ -108,7 +148,7 @@ const Profile = () => {
           >
             <Text
               style={{
-                color: Colors.grey400,
+                color: Colors.grey600,
                 fontWeight: "bold",
                 fontSize: 16,
                 marginBottom: 10,
@@ -118,18 +158,12 @@ const Profile = () => {
               {"   "}
               Phone Number
             </Text>
-            <Text
-              style={{
-                letterSpacing: 1,
-              }}
-            >
-              +254 76843120
-            </Text>
+            <TextInput placeholder="Enter phone number" />
           </View>
           <View
             style={{
               flexDirection: "column",
-              borderColor: Colors.grey400,
+              borderColor: Colors.grey200,
               borderWidth: StyleSheet.hairlineWidth,
               justifyContent: "space-between",
               borderRadius: 10,
@@ -139,7 +173,7 @@ const Profile = () => {
           >
             <Text
               style={{
-                color: Colors.grey400,
+                color: Colors.grey600,
                 fontWeight: "bold",
                 fontSize: 16,
                 marginBottom: 10,
@@ -148,8 +182,7 @@ const Profile = () => {
               <Fontisto name="email" size={16} color={Colors.grey400} /> {"  "}{" "}
               Email
             </Text>
-
-            <Text style={{}}>margaretnjoki12@gmail.com</Text>
+            <Text>{email}</Text>
           </View>
           <Link
             href="/(modals)/ChangeProfile"
@@ -171,13 +204,12 @@ const Profile = () => {
                   fontWeight: "bold",
                 }}
               >
-                Change Profile
+                Update Profile
               </Text>
             </Pressable>
           </Link>
-          <Link
-            href="/"
-            asChild
+          <Pressable
+            onPress={logOut}
             style={{
               backgroundColor: Colors.blue400,
               padding: 10,
@@ -188,17 +220,15 @@ const Profile = () => {
               marginTop: 20,
             }}
           >
-            <Pressable>
-              <Text
-                style={{
-                  color: Colors.white,
-                  fontWeight: "bold",
-                }}
-              >
-                Log out
-              </Text>
-            </Pressable>
-          </Link>
+            <Text
+              style={{
+                color: Colors.white,
+                fontWeight: "bold",
+              }}
+            >
+              Log out
+            </Text>
+          </Pressable>
         </View>
       </View>
     </View>

@@ -7,7 +7,7 @@ import {
 import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import * as Location from "expo-location";
 
@@ -26,15 +26,16 @@ type Location = {
 
 const Home = () => {
   const [alarm, setAlarm] = useState(false);
-  const [user, setUser] = useState<string >(""); // Explicitly specify the type of 'user' as string
+  const [user, setUser] = useState<string | null>(""); // Explicitly specify the type of 'user' as string
   const [location, setLocation] = useState<Location>();
   const [errorMsg, setErrorMsg] = useState('');
-  const [alarmDetails, setAlarmDetails] = useState<AlarmUser | null>()
+  const [alarmDetails, setAlarmDetails] = useState<string>('')
   
 
   useEffect(() => {
     (async () => {
       const usersetails = await AsyncStorage.getItem('user')
+      setUser(usersetails)
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
@@ -52,26 +53,50 @@ const Home = () => {
     }
     console.log('from index 55', user)
   async function HandlePress() {
-        setAlarm(!alarm);
         console.log(location)
-        if(alarm){
+        if(!alarm){
+          setAlarm(true);
           const success = await addComplaint("Alarms", {
             location: location,
             AlarmRaiser: user
           });
+          
+        } else{
+          setAlarm(false);
+          const Recentsuccess = await addComplaint("RecentAlarms", {
+            location: location,
+            AlarmRaiser: user,
+          });
+          console.log('recent alarms', Recentsuccess)
+          const success = await removecomplaint(
+            "Alarms",
+            alarmDetails
+          );
+          setAlarm(false);
         }
   }
   const addComplaint = async (collectionName: string, data: AlarmUser) => {
     try {
       // Add a new document with a generated ID to the specified collection
-      await addDoc(collection(db, collectionName), data);
-      console.log("Data uploaded successfully!");
+     const AddedData =  await addDoc(collection(db, collectionName), data);
+      console.log("Data uploaded successfully!", AddedData.id);
+      setAlarmDetails(AddedData.id)
       return true; // Indicate success
     } catch (error) {
       console.error("Error uploading data:", error);
       return false; // Indicate failure
     }
   };
+  const removecomplaint = async(collectioname: string, collectionid: string)=>{
+    try{
+      await deleteDoc(doc(db, collectioname, collectionid))
+      console.log("Data removed successfully!");
+      return true;
+    }catch(error: any){
+      console.error('error removing the alarm',error)
+      return false;
+    }
+  }
   
   
   if (user === null ) {

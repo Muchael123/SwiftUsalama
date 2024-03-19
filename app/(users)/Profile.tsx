@@ -1,43 +1,40 @@
-import { View, Text, Dimensions, Image, StyleSheet, TextInput,TouchableOpacity, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Dimensions,
+  Image,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
-import { Fontisto, Feather } from "@expo/vector-icons";
+import { Fontisto, Feather, MaterialIcons } from "@expo/vector-icons";
 import { Link, Redirect } from "expo-router/build/exports";
-import {signOut} from '@firebase/auth'
+import { signOut } from "@firebase/auth";
 import { auth } from "@/firebaseConfig";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
-   const [user, setUser] = useState<string | null>("");
+const [email,setEmail] = useState<string | null>()
 
-   useEffect(()=>{
-    setUsername()
-    
-    }, [])
-    const setUsername = async()=>{  
-      const userid = await AsyncStorage.getItem('user')
-      setUser(userid)
-    }
-    if (user === null ) {
-        return <Redirect href="/(modals)/Login" />;
-   }
-  
-
-  const sliceEmail = (email: string) => {
-    const username = email.slice(0, 10);
-    const provider = email.slice(email.indexOf("@") + 1);
-    return `${username}...@${provider}`;
-  };
-  const logOut = async ()=>{
-    signOut(auth)
-    AsyncStorage.removeItem('user')
-    console.log(AsyncStorage.getItem('user'))
-    console.log('signed out')
-    router.push('/')
-
+  useEffect(()=>{
+getUser()
+  },[])
+  const getUser = async ()=>{
+    const myemail = await AsyncStorage.getItem("userEmail");
+    setEmail(myemail)
+    console.log('from email',myemail)
   }
-  console.log('from user profile',user)
+  const logOut = async () => {
+    signOut(auth);
+    AsyncStorage.removeItem("user");
+    console.log(AsyncStorage.getItem("user"));
+    console.log("signed out");
+    router.push("/");
+  };
   return (
     <View
       style={{
@@ -64,16 +61,29 @@ const Profile = () => {
             borderWidth: 5,
           }}
         >
-          <Image
-            style={{
-              borderRadius: Dimensions.get("window").width / 3,
-              height: "100%",
-              width: "100%",
+          <View>
+            <Image
+              style={{
+                borderRadius: Dimensions.get("window").width / 3,
+                height: "100%",
+                width: "100%",
 
-              objectFit: "cover",
-            }}
-            source={require("@/assets/images/download12.jpg")}
-          />
+                objectFit: "cover",
+              }}
+              source={require("@/assets/images/download12.jpg")}
+            />
+            <MaterialIcons
+              name="add-a-photo"
+              size={24}
+              color='white'
+              style={{
+                position: "absolute",
+                bottom: 10,
+                right: 10,
+                color: Colors.blue200
+              }}
+            />
+          </View>
         </View>
       </View>
       <View
@@ -108,7 +118,7 @@ const Profile = () => {
         <View
           style={{
             padding: 40,
-            marginTop: Dimensions.get("window").height / 20,
+            marginTop: Dimensions.get("window").height / 70,
             gap: 16,
           }}
         >
@@ -126,7 +136,7 @@ const Profile = () => {
           <View
             style={{
               flexDirection: "column",
-              borderColor: Colors.grey400,
+              borderColor: Colors.grey200,
               borderWidth: StyleSheet.hairlineWidth,
               justifyContent: "space-between",
               borderRadius: 10,
@@ -136,7 +146,7 @@ const Profile = () => {
           >
             <Text
               style={{
-                color: Colors.grey400,
+                color: Colors.grey600,
                 fontWeight: "bold",
                 fontSize: 16,
                 marginBottom: 10,
@@ -146,18 +156,12 @@ const Profile = () => {
               {"   "}
               Phone Number
             </Text>
-            <Text
-              style={{
-                letterSpacing: 1,
-              }}
-            >
-              +254 76843120
-            </Text>
+            <TextInput placeholder="Enter phone number" />
           </View>
           <View
             style={{
               flexDirection: "column",
-              borderColor: Colors.grey400,
+              borderColor: Colors.grey200,
               borderWidth: StyleSheet.hairlineWidth,
               justifyContent: "space-between",
               borderRadius: 10,
@@ -167,7 +171,7 @@ const Profile = () => {
           >
             <Text
               style={{
-                color: Colors.grey400,
+                color: Colors.grey600,
                 fontWeight: "bold",
                 fontSize: 16,
                 marginBottom: 10,
@@ -176,8 +180,8 @@ const Profile = () => {
               <Fontisto name="email" size={16} color={Colors.grey400} /> {"  "}{" "}
               Email
             </Text>
+            <Text>{email}</Text>
 
-            <Text style={{}}>margaretnjoki12@gmail.com</Text>
           </View>
           <Link
             href="/(modals)/ChangeProfile"
@@ -199,11 +203,11 @@ const Profile = () => {
                   fontWeight: "bold",
                 }}
               >
-                Change Profile
+                Update Profile
               </Text>
             </Pressable>
           </Link>
-            <Pressable
+          <Pressable
             onPress={logOut}
             style={{
               backgroundColor: Colors.blue400,
@@ -213,16 +217,17 @@ const Profile = () => {
               justifyContent: "center",
               alignItems: "center",
               marginTop: 20,
-            }}>
-              <Text
-                style={{
-                  color: Colors.white,
-                  fontWeight: "bold",
-                }}
-              >
-                Log out
-              </Text>
-            </Pressable>
+            }}
+          >
+            <Text
+              style={{
+                color: Colors.white,
+                fontWeight: "bold",
+              }}
+            >
+              Log out
+            </Text>
+          </Pressable>
         </View>
       </View>
     </View>

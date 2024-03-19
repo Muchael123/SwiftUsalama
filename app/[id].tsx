@@ -30,7 +30,13 @@ const Home = () => {
   const { id } = useLocalSearchParams();
   const [alarmData, setAlarmData] = useState<AlarmData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [initialLoc, setinitialLoc] = useState <LocationMap>();
+    const [initialLoc, setInitialLoc] = useState<LocationMap>({
+      latitude: 0.2927,
+      longitude: 34.7519,
+      latitudeDelta: 0.09, // Default latitude delta
+      longitudeDelta: 0.04, // Default longitude delta
+    });
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -44,11 +50,11 @@ const fetchData = async () => {
       const alarmData = docSnap.data();
       console.log("from alarm Map", alarmData);
       setAlarmData(alarmData);
-      setinitialLoc(alarmData);
+      setInitialLoc(alarmData);
     } else {
       // Document doesn't exist, handle appropriately
       console.log("Document does not exist");
-      setinitialLoc({
+      setInitialLoc({
         latitude: 0.2927,
         longitude: 34.7519,
         latitudeDelta: 0.0922,
@@ -58,7 +64,7 @@ const fetchData = async () => {
   } catch (error) {
     console.error("Error getting document:", error);
     // Handle error
-    setinitialLoc({
+    setInitialLoc({
       latitude: 0.2927,
       longitude: 34.7519,
       latitudeDelta: 0.0922,
