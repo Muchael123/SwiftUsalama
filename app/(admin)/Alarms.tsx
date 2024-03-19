@@ -30,11 +30,15 @@ const AlarmsScreen = () => {
     setLoading(true);
     try {
       const querySnapshot = await getDocs(collection(db, "Alarms"));
-      const alarmsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      console.log('from query',querySnapshot)
+      const alarmsData = querySnapshot.docs.map((doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        })
+      );
       setAlarmUsers(alarmsData);
+      console.log('from alarmdata', alarmsData)
     } catch (error) {
       console.error("Error fetching alarms:", error);
     } finally {
@@ -67,7 +71,7 @@ const AlarmsScreen = () => {
                       color: Colors.white,
                     }}
                   >
-                    {item.email}
+                    {item.id}
                   </Text>
                   <Text
                     style={{

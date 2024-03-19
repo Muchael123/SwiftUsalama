@@ -16,51 +16,48 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
 
 type AlarmUser = {
-  email: string;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
+  location: Location;
   id: string;
 };
+type Location = {
+  latitude: number;
+  longitude: number;
+}
 
 const Home = () => {
   const [alarm, setAlarm] = useState(false);
-  const [user, setUser] = useState<string | null>(""); // Explicitly specify the type of 'user' as string
-  const [location, setLocation] = useState<object>();
+  const [user, setUser] = useState<string >(""); // Explicitly specify the type of 'user' as string
+  const [location, setLocation] = useState<Location>();
   const [errorMsg, setErrorMsg] = useState('');
+  const [alarmDetails, setAlarmDetails] = useState<AlarmUser | null>()
+  
 
   useEffect(() => {
     (async () => {
+      const usersetails = await AsyncStorage.getItem('user')
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
       }
-
+      setUsername();
+      console.log('from index',usersetails)
       const location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      console.log(location);
+      setLocation({ latitude: location?.coords?.latitude , longitude: location?.coords?.longitude});
     })();
   }, []);
-  useEffect(()=>{
-    setUsername()
-    }, [])
     const setUsername = async()=>{  
       const userid = await AsyncStorage.getItem('user')
-      setUser(userid)
+      setUser(userid!)
     }
+    console.log('from index 55', user)
   async function HandlePress() {
-
         setAlarm(!alarm);
+        console.log(location)
         if(alarm){
-          const success = await addComplaint("Complaints", {
-            email: "",
-            location: {
-              latitude: 0,
-              longitude: 0
-            },
-            id: ""
+          const success = await addComplaint("Alarms", {
+            location: location,
+            AlarmRaiser: user
           });
         }
   }
