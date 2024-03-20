@@ -15,6 +15,7 @@ import * as Location from "expo-location";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
 
+
 type AlarmUser = {
   location: Location;
   id: string;
