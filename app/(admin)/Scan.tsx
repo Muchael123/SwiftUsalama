@@ -7,7 +7,8 @@ import {
   Dimensions,
   Pressable,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import LottieView from "lottie-react-native";
+import React, { useEffect, useRef, useState } from "react";
 import Colors from "@/constants/Colors";
 import { Entypo } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -19,6 +20,7 @@ import formatDate from "@/Hooks/DateTimeConverter";
 const Scan = () => {
   const [complaints, setComplaints] = useState<AlarmUser[]>([]);
   const [loading, setLoading] = useState(false);
+  const animation = useRef(null);
 
   useEffect(() => {
     const unsubscribe = listenForComplaints();
@@ -58,7 +60,9 @@ const Scan = () => {
         </Text>
       </View>
       {loading ? (
-        <Text>Loading...</Text>
+        <View>
+      
+        </View>
       ) : (
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -70,6 +74,7 @@ const Scan = () => {
                   backgroundColor: Colors.white,
                   padding: 10,
                   margin: 10,
+                  minWidth: Dimensions.get("window").width / 1.2,
                   borderRadius: 10,
                 }}
               >

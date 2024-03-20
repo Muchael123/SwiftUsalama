@@ -3,13 +3,13 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAK0QR82iwqvryr0WK27XPC27EHNMVnV7k",
-  authDomain: "swiftusalama.firebaseapp.com",
-  databaseURL: "https://swiftusalama-default-rtdb.firebaseio.com",
-  projectId: "swiftusalama",
-  storageBucket: "swiftusalama.appspot.com",
-  messagingSenderId: "454927728343",
-  appId: "1:454927728343:web:58a8a2e05e1e439e263a92"
+  apiKey: "AIzaSyAfQ-sN5klppEA-qkkpYDNyNq_hV2rx8Fg",
+  authDomain: "chatgpt-clone-b7c8b.firebaseapp.com",
+  projectId: "chatgpt-clone-b7c8b",
+  storageBucket: "chatgpt-clone-b7c8b.appspot.com",
+  messagingSenderId: "1095999636073",
+  appId: "1:1095999636073:web:1a2b8164e2fce3c241d8f8",
+  measurementId: "G-NNQD4YNE61",
 };
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app);
