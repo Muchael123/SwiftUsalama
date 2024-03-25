@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
   const [email, setEmail] = useState<string | null>();
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [image, setImage] = useState<string | null>(null);
   useEffect(() => {
     getUser();
@@ -38,7 +39,7 @@ const Profile = () => {
     signOut(auth)
       .then(() => {
         showToast("Sign-out successful.");
-        router.push("/");
+        router.push("/Login");
       })
       .catch((error) => {
         showToast(" An error happened.");
@@ -69,6 +70,20 @@ const Profile = () => {
     const storedImage = await AsyncStorage.getItem("profileImage");
     if (storedImage) {
       setImage(storedImage);
+    }
+  };
+
+  const handlePhoneNumberChange = (input: string) => {
+    // Remove all non-numeric characters
+    const numericInput = input.replace(/[^0-9]/g, "");
+
+    // Check if the input starts with "+254" or "07"
+    if (numericInput.startsWith("254")) {
+      setPhoneNumber(`+254${numericInput.substring(3, 12)}`);
+    } else if (numericInput.startsWith("7")) {
+      setPhoneNumber(`07${numericInput.substring(1, 10)}`);
+    } else {
+      setPhoneNumber(numericInput.substring(0, 10));
     }
   };
 
@@ -113,7 +128,7 @@ const Profile = () => {
             <TouchableOpacity
               style={{
                 position: "absolute",
-                bottom:0,
+                bottom: 0,
                 right: 0,
                 zIndex: 999,
               }}
@@ -206,7 +221,13 @@ const Profile = () => {
               {"   "}
               Phone Number
             </Text>
-            <TextInput placeholder="Enter phone number" />
+            <TextInput
+              // style={styles.input}
+              placeholder="Enter phone number"
+              value={phoneNumber}
+              onChangeText={handlePhoneNumberChange}
+              keyboardType="phone-pad"
+            />
           </View>
           <View
             style={{

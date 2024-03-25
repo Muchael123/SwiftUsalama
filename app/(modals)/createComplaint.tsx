@@ -1,4 +1,11 @@
-import { View, Text, TextInput,ToastAndroid, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  ToastAndroid,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import styles from "@/constants/styles";
 import { collection, addDoc } from "firebase/firestore";
@@ -6,12 +13,11 @@ import { db } from "@/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
-
 type Complaint = {
   title: string;
   description: string;
   date: number;
-  user: string | null
+  user: string | null;
 };
 
 const createComplaint = () => {
@@ -20,7 +26,6 @@ const createComplaint = () => {
   const [loading, setLoading] = useState(false);
   const [complaint, setComplaint] = useState<Complaint[]>([]);
 
- 
   const addComplaint = async (collectionName: string, data: Complaint) => {
     try {
       // Add a new document with a generated ID to the specified collection
@@ -32,29 +37,43 @@ const createComplaint = () => {
       return false; // Indicate failure
     }
   };
-  function showToast(message:string) {
+  function showToast(message: string) {
     ToastAndroid.show(message, ToastAndroid.SHORT);
   }
 
   const handleSubmit = async () => {
+    if (!title || !description) {
+      Alert.alert("Error", "All fields are required.");
+      return;
+    }
+    if (description.length < 5) {
+      Alert.alert("Error", "Title and description should be greater than 5 characters.");
+      return;
+    }
+    if (title.length < 5) {
+      Alert.alert(
+        "Error",
+        "Title and description should be greater than 5 characters."
+      );
+      return;
+    }
     try {
       setLoading(true);
       console.log(title, description);
-      const userId = await AsyncStorage.getItem("user")
+      const userId = await AsyncStorage.getItem("user");
 
       // upload complaint
       const success = await addComplaint("Complaints", {
         title: title,
         description: description,
         date: Date.now(),
-        user: userId
+        user: userId,
       });
       if (success) {
-        showToast("Complaint added successfully!!")
+        showToast("Complaint added successfully!!");
         router.push("/(users)/Scan");
       } else {
         Alert.alert("Error", "Failed to add complaint.");
-        
       }
     } catch (error) {
       console.error("Error submit in:", error);
