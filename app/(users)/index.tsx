@@ -7,7 +7,7 @@ import {
 import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import * as Location from "expo-location";
 
@@ -16,65 +16,87 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
 
 type AlarmUser = {
-  email: string;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
+  location: Location;
   id: string;
 };
+type Location = {
+  latitude: number;
+  longitude: number;
+}
 
 const Home = () => {
   const [alarm, setAlarm] = useState(false);
   const [user, setUser] = useState<string | null>(""); // Explicitly specify the type of 'user' as string
-  const [location, setLocation] = useState<object>();
+  const [location, setLocation] = useState<Location>();
   const [errorMsg, setErrorMsg] = useState('');
+  const [alarmDetails, setAlarmDetails] = useState<string>('')
+  
 
   useEffect(() => {
     (async () => {
+      const usersetails = await AsyncStorage.getItem('user')
+      setUser(usersetails)
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
       }
-
+      setUsername();
+      console.log('from index',usersetails)
       const location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      console.log(location);
+      setLocation({ latitude: location?.coords?.latitude , longitude: location?.coords?.longitude});
     })();
   }, []);
-  useEffect(()=>{
-    setUsername()
-    }, [])
     const setUsername = async()=>{  
       const userid = await AsyncStorage.getItem('user')
-      setUser(userid)
+      setUser(userid!)
     }
+    console.log('from index 55', user)
   async function HandlePress() {
-
-        setAlarm(!alarm);
-        if(alarm){
-          const success = await addComplaint("Complaints", {
-            email: "",
-            location: {
-              latitude: 0,
-              longitude: 0
-            },
-            id: ""
+        console.log(location)
+        if(!alarm){
+          setAlarm(true);
+          const success = await addComplaint("Alarms", {
+            location: location,
+            AlarmRaiser: user
           });
+          
+        } else{
+          setAlarm(false);
+          const Recentsuccess = await addComplaint("RecentAlarms", {
+            location: location,
+            AlarmRaiser: user,
+          });
+          console.log('recent alarms', Recentsuccess)
+          const success = await removecomplaint(
+            "Alarms",
+            alarmDetails
+          );
+          setAlarm(false);
         }
   }
   const addComplaint = async (collectionName: string, data: AlarmUser) => {
     try {
       // Add a new document with a generated ID to the specified collection
-      await addDoc(collection(db, collectionName), data);
-      console.log("Data uploaded successfully!");
+     const AddedData =  await addDoc(collection(db, collectionName), data);
+      console.log("Data uploaded successfully!", AddedData.id);
+      setAlarmDetails(AddedData.id)
       return true; // Indicate success
     } catch (error) {
       console.error("Error uploading data:", error);
       return false; // Indicate failure
     }
   };
+  const removecomplaint = async(collectioname: string, collectionid: string)=>{
+    try{
+      await deleteDoc(doc(db, collectioname, collectionid))
+      console.log("Data removed successfully!");
+      return true;
+    }catch(error: any){
+      console.error('error removing the alarm',error)
+      return false;
+    }
+  }
   
   
   if (user === null ) {

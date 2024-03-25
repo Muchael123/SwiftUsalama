@@ -1,11 +1,44 @@
-import { View, Text, Platform, FlatList, Touchable, TouchableOpacity, Dimensions, Pressable } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  Platform,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+  Pressable,
+} from "react-native";
+import LottieView from "lottie-react-native";
+import React, { useEffect, useRef, useState } from "react";
 import Colors from "@/constants/Colors";
-import Dumy from "@/constants/Dumy";
 import { Entypo } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
 import { Link } from "expo-router";
+import formatDate from "@/Hooks/DateTimeConverter";
+
 const Scan = () => {
+  const [complaints, setComplaints] = useState<AlarmUser[]>([]);
+  const [loading, setLoading] = useState(false);
+  const animation = useRef(null);
+
+  useEffect(() => {
+    const unsubscribe = listenForComplaints();
+    return () => unsubscribe();
+  }, []);
+
+  const listenForComplaints = () => {
+    setLoading(true);
+    return onSnapshot(collection(db, "Complaints"), (snapshot) => {
+      const complaintData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setComplaints(complaintData);
+      setLoading(false);
+    });
+  };
+
   return (
     <LinearGradient
       colors={[Colors.blue400, Colors.blue400, Colors.white]}
@@ -23,49 +56,56 @@ const Scan = () => {
             color: Colors.white,
           }}
         >
-          Recent complaints recieved
+          Recent complaints received
         </Text>
       </View>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={Dumy}
-        renderItem={({ item }) => {
-          return (
-            <View
-              style={{
-                backgroundColor: Colors.white,
-                padding: 10,
-                margin: 10,
-                borderRadius: 10,
-              }}
-            >
-              <Text
+      {loading ? (
+        <View>
+      
+        </View>
+      ) : (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={complaints}
+          renderItem={({ item }) => {
+            return (
+              <View
                 style={{
-                  fontWeight: "bold",
-                  fontSize: 20,
-                  color: Colors.blue400,
+                  backgroundColor: Colors.white,
+                  padding: 10,
+                  margin: 10,
+                  minWidth: Dimensions.get("window").width / 1.2,
+                  borderRadius: 10,
                 }}
               >
-                {item.username}
-              </Text>
-              <Text
-                style={{
-                  color: Colors.blue400,
-                }}
-              >
-                {item.complaint}
-              </Text>
-              <Text
-                style={{
-                  color: Colors.blue400,
-                }}
-              >
-                {item.Date}
-              </Text>
-            </View>
-          );
-        }}
-      />
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: 20,
+                    color: Colors.blue400,
+                  }}
+                >
+                  {item.title}
+                </Text>
+                <Text
+                  style={{
+                    color: Colors.blue400,
+                  }}
+                >
+                  {item.description}
+                </Text>
+                <Text
+                  style={{
+                    color: Colors.blue400,
+                  }}
+                >
+                  {formatDate(item.date)}
+                </Text>
+              </View>
+            );
+          }}
+        />
+      )}
       <View>
         <Link
           href="/(modals)/createComplaint"

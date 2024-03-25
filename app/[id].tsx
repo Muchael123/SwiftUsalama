@@ -1,44 +1,88 @@
-import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
-import MapView, { Callout, Marker, AnimatedRegion } from "react-native-maps";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator,
+} from "react-native";
+import { collection, getDoc, doc } from "firebase/firestore";
+import MapView, { Marker } from "react-native-maps";
 import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams } from "expo-router";
+import { db } from "@/firebaseConfig";
+
+type AlarmData = {
+  AlarmRaiser: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+};
+type LocationMap = {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+};
 
 const Home = () => {
-  const {id} = useLocalSearchParams()
-  const kakamegaBoundaries = {
-    minLatitude: 0.0,
-    maxLatitude: 0.5,
-    minLongitude: 34.5,
-    maxLongitude: 35.5,
-  };
-  const [cordinates, setCordinates] = useState<
-    { latitude: number; longitude: number }[]
-  >([]);
+  const { id } = useLocalSearchParams();
+  const [alarmData, setAlarmData] = useState<AlarmData | null>(null);
+  const [loading, setLoading] = useState(false);
+    const [initialLoc, setInitialLoc] = useState<LocationMap>({
+      latitude: 0.2927,
+      longitude: 34.7519,
+      latitudeDelta: 0.09, // Default latitude delta
+      longitudeDelta: 0.04, // Default longitude delta
+    });
 
   useEffect(() => {
-    const newCordinates = [];
-    for (let i = 0; i < 5; i++) {
-      const latitude =
-        Math.random() *
-          (kakamegaBoundaries.maxLatitude - kakamegaBoundaries.minLatitude) +
-        kakamegaBoundaries.minLatitude;
-      const longitude =
-        Math.random() *
-          (kakamegaBoundaries.maxLongitude - kakamegaBoundaries.minLongitude) +
-        kakamegaBoundaries.minLongitude;
-
-      newCordinates.push({ latitude, longitude });
-    }
-    setCordinates(newCordinates);
+    fetchData();
   }, []);
-if(id===null){
-  return <Text>Not found</Text>
-}
+const fetchData = async () => {
+  setLoading(true);
+  try {
+    const docRef = doc(db, "Alarms", `${id}`);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const alarmData = docSnap.data();
+      console.log("from alarm Map", alarmData);
+      setAlarmData(alarmData);
+      setInitialLoc(alarmData);
+    } else {
+      // Document doesn't exist, handle appropriately
+      console.log("Document does not exist");
+      setInitialLoc({
+        latitude: 0.2927,
+        longitude: 34.7519,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+    }
+  } catch (error) {
+    console.error("Error getting document:", error);
+    // Handle error
+    setInitialLoc({
+      latitude: 0.2927,
+      longitude: 34.7519,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+console.log('above return',alarmData, initialLoc)
+  if (id === null) {
+    return <Text>Not found</Text>;
+  }
   return (
     <View style={{ flex: 1 }}>
-      <Stack.Screen options={{title: `${id}`}}/>
+      {loading && <ActivityIndicator />}
+      <Stack.Screen options={{ title: `${id}` }} />
       <View style={styles.TopView}>
         <Text style={{ color: Colors.white, fontSize: 20 }}>Home</Text>
       </View>
@@ -48,27 +92,23 @@ if(id===null){
           userInterfaceStyle="dark"
           liteMode={true}
           showsUserLocation={true}
-          initialRegion={{
-            latitude: 0.2827,
-            longitude: 34.7519,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
+          initialRegion={initialLoc}
           style={styles.map}
         >
-          {cordinates.map((coordinate, index) => (
-            <Marker key={index} coordinate={coordinate}>
-              <FontAwesome name="map-pin" size={24} color={Colors.red500} />
-              <Callout>
-                <Text>Margaret njoroge</Text>
-              </Callout>
-            </Marker>
-          ))}
+          {alarmData && (
+            <Marker
+              coordinate={{
+                latitude: alarmData.location.latitude,
+                longitude: alarmData.location.longitude,
+              }}
+            />
+          )}
         </MapView>
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   TopView: {
     backgroundColor: Colors.blue400,
@@ -90,4 +130,5 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 });
+
 export default Home;
