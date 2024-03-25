@@ -70,6 +70,7 @@ const Scan = () => {
                   backgroundColor: Colors.white,
                   padding: 10,
                   margin: 10,
+                  minWidth: Dimensions.get("window").width / 1.2,
                   borderRadius: 10,
                 }}
               >

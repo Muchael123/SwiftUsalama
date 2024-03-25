@@ -84,7 +84,7 @@ console.log('above return',alarmData, initialLoc)
       {loading && <ActivityIndicator />}
       <Stack.Screen options={{ title: `${id}` }} />
       <View style={styles.TopView}>
-        <Text style={{ color: Colors.white, fontSize: 20 }}>Home</Text>
+        <Text style={{ color: Colors.white, fontSize: 20 }}>Google Maps</Text>
       </View>
       <View style={styles.BottomView}>
         <MapView
