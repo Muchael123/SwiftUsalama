@@ -10,10 +10,10 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { collection, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import * as Location from "expo-location";
-
-
+import schedulePushNotification from '@/Hooks/Notify'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
+
 
 type AlarmUser = {
   location: Location;
@@ -34,7 +34,7 @@ const Home = () => {
 
   useEffect(() => {
     (async () => {
-      const usersetails = await AsyncStorage.getItem('user')
+      const usersetails = await AsyncStorage.getItem("userEmail");
       setUser(usersetails)
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -48,7 +48,7 @@ const Home = () => {
     })();
   }, []);
     const setUsername = async()=>{  
-      const userid = await AsyncStorage.getItem('user')
+      const userid = await AsyncStorage.getItem("userEmail");
       setUser(userid!)
     }
     console.log('from index 55', user)
@@ -56,6 +56,7 @@ const Home = () => {
         console.log(location)
         if(!alarm){
           setAlarm(true);
+          schedulePushNotification()
           const success = await addComplaint("Alarms", {
             location: location,
             AlarmRaiser: user
@@ -93,7 +94,7 @@ const Home = () => {
       console.log("Data removed successfully!");
       return true;
     }catch(error: any){
-      console.error('error removing the alarm',error)
+      console.error('error removing the complaint',error)
       return false;
     }
   }
@@ -115,14 +116,15 @@ const Home = () => {
             backgroundColor: alarm ? Colors.red400 : Colors.blue400,
             flex: 7,
             gap: 15,
+            padding:4,
             alignItems: "center",
             paddingTop: Platform.OS === "android" ? 50 : 0,
           }}
         >
           <Text
             style={{
-              fontWeight: "bold",
-              fontSize: 20,
+              fontWeight: "300",
+              fontSize: 18,
               color: Colors.white,
             }}
           >
