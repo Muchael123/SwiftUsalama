@@ -9,8 +9,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
-
-export default async function schedulePushNotification() {
+export default async function schedulePushNotification(userEmail: string) {
   const expoPushToken = await registerForPushNotificationsAsync();
   const notificationListener = Notifications.addNotificationReceivedListener(
     (notification) => {
@@ -23,7 +22,6 @@ export default async function schedulePushNotification() {
       console.log(response);
     });
 
-  const userEmail = await getUser();
 
   await Notifications.scheduleNotificationAsync({
     content: {

@@ -11,6 +11,7 @@ import { db } from "@/firebaseConfig";
 import Colors from "@/constants/Colors";
 import { Tabs } from "expo-router";
 import { Link } from "expo-router";
+import schedulePushNotification from "@/Hooks/Notify";
 
 type AlarmUser = {
   email: string;
@@ -51,51 +52,56 @@ const AlarmsScreen = () => {
 
     return unsubscribe;
   };
-
-  return (
-    <View>
-      <Tabs.Screen options={{}} />
-      {loading && <ActivityIndicator />}
-      {alarmUsers.length > 0 ? (
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={alarmUsers}
-          renderItem={({ item }) => {
-            return (
-              <Link href={`/${item.id}`} asChild>
-                <Pressable
-                  style={{
-                    backgroundColor: Colors.red500,
-                    padding: 10,
-                    margin: 10,
-                    borderRadius: 20,
-                  }}
-                >
-                  <Text
+  if (alarmUsers){
+    alarmUsers.map((alarm)=>{
+      
+          schedulePushNotification(alarm?.AlarmRaiser);
+    })
+  }
+    return (
+      <View>
+        <Tabs.Screen options={{}} />
+        {loading && <ActivityIndicator />}
+        {alarmUsers.length > 0 ? (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={alarmUsers}
+            renderItem={({ item }) => {
+              return (
+                <Link href={`/${item.id}`} asChild>
+                  <Pressable
                     style={{
-                      fontWeight: "bold",
-                      fontSize: 20,
-                      color: Colors.white,
+                      backgroundColor: Colors.red500,
+                      padding: 10,
+                      margin: 10,
+                      borderRadius: 20,
                     }}
                   >
-                    {item.id}
-                  </Text>
-                  <Text style={{ color: Colors.white }}>
-                    {item.location.latitude}
-                  </Text>
-                  <Text style={{ color: Colors.white }}>
-                    {item.location.longitude}
-                  </Text>
-                </Pressable>
-              </Link>
-            );
-          }}
-        />
-      ) : (
-        <Text>No alarms</Text>
-      )}
-    </View>
-  );
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: 20,
+                        color: Colors.white,
+                      }}
+                    >
+                      {item.AlarmRaiser}
+                    </Text>
+                    <Text style={{ color: Colors.white }}>
+                      {item.location.latitude}
+                    </Text>
+                    <Text style={{ color: Colors.white }}>
+                      {item.location.longitude}
+                    </Text>
+                  </Pressable>
+                </Link>
+              );
+            }}
+          />
+        ) : (
+          <Text>No alarms</Text>
+        )}
+      </View>
+    );
 };
 
 export default AlarmsScreen;
