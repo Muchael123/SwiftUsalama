@@ -10,7 +10,6 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { collection, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import * as Location from "expo-location";
-import schedulePushNotification from '@/Hooks/Notify'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
 
@@ -56,7 +55,6 @@ const Home = () => {
         console.log(location)
         if(!alarm){
           setAlarm(true);
-          schedulePushNotification()
           const success = await addComplaint("Alarms", {
             location: location,
             AlarmRaiser: user
